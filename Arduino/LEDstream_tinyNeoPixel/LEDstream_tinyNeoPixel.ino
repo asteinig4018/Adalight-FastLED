@@ -31,8 +31,9 @@ const uint8_t
 // --- FastLED Setings
 #define LED_TYPE     WS2812B  // led strip type for FastLED
 #define COLOR_ORDER  NEO_GRB      // color order for bitbang
-#define PIN_DATA     9//6        // led data output pin
-// #define PIN_CLOCK  7       // led data clock pin (uncomment if you're using a 4-wire LED type)
+#define PIN_DATA     9        // led data output pin
+// #define PIN_CLOCK  7       // led data clock pin - CURRENTLY NOT IMPLEMENTED
+//                            (uncomment if you're using a 4-wire LED type)
 
 // --- Serial Settings
 const unsigned long
@@ -45,8 +46,7 @@ const uint16_t
 // #define CLEAR_ON_START     // LEDs are cleared on reset
 
 // --- Debug Settings (uncomment to add)
-#define DEBUG_LED 3//13       // toggles the Arduino's built-in LED on header match
-#define DEBUG_TIME 0
+//#define DEBUG_LED 3//13       // toggles the Arduino's built-in LED on header match
 // #define DEBUG_FPS 8        // enables a pulse on LED latch
 
 // --------------------------------------------------------------------
@@ -205,26 +205,19 @@ void headerMode(){
       case HICHECK:
         hi = c;
         headPos++;
-//        D_LED(ON);
-//        delay(DEBUG_TIME);
         break;
       case LOCHECK:
         lo = c;
         headPos++;
-//        D_LED(OFF);
-//        delay(DEBUG_TIME);
         break;
       case CHECKSUM:
         chk = c;
         if(chk == (hi ^ lo ^ 0x55)) {
           // Checksum looks valid. Get 16-bit LED count, add 1
           // (# LEDs is always > 0) and multiply by 3 for R,G,B.
-//          D_LED(ON);
-//          delay(DEBUG_TIME);
-//          D_LED(OFF);
+          D_LED(ON);
           bytesRemaining = 3L * (256L * (long)hi + (long)lo + 1L);
           outPos = 0;
-          //memset(leds, 0, Num_Leds * sizeof(struct CRGB));
           //tnp.clear();
           mode = Data; // Proceed to latch wait mode
         }
@@ -236,7 +229,6 @@ void headerMode(){
 
 void dataMode(){
   // If LED data is not full
-  //digitalWrite(2, HIGH);
   if (outPos < Num_Leds*3){ //should change
     ledsRaw[outPos++] = c; // Issue next byte
   }
@@ -247,10 +239,8 @@ void dataMode(){
     // End of data -- issue latch:
     mode = Header; // Begin next header search
     tnp.show();
-    //D_FPS;
-    //D_LED(OFF);
-    //digitalWrite(2, LOW);
-    //delay(DEBUG_TIME);
+    D_FPS;
+    D_LED(OFF);
     SERIAL_FLUSH;
   }
 }
@@ -264,9 +254,8 @@ void timeouts(){
 
     // If no data received for an extended time, turn off all LEDs.
     if(SerialTimeout != 0 && (t - lastByteTime) >= (uint32_t) SerialTimeout * 1000) {
-      //memset(leds, 0, Num_Leds * sizeof(struct CRGB)); //filling Led array by zeroes
-            //tnp.clear();
-      //FastLED.show();
+      //filling Led array with zeroes
+      tnp.clear();
       tnp.show();
       digitalWrite(2, HIGH);
       mode = Header;
