@@ -1,7 +1,10 @@
-# Adalight-FastLED
+# Adalight-tinyNeoPixel
 [![Build Status](https://github.com/dmadison/Adalight-FastLED/workflows/build/badge.svg?branch=master)](https://github.com/dmadison/Adalight-FastLED/actions?query=workflow%3Abuild)
 
 ![Adalight-Rainbow](http://i.imgur.com/sHygxq9.jpg)
+
+## This Fork
+This is a fork of Adalight-FastLED that adds a tinyNeoPixel port. I ported and tested this with an attiny1614 as the FastLED library did not run on that hardware. It works identically to the original (clock pin is not yet implemented).
 
 ## Synopsis
 
